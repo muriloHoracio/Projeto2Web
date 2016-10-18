@@ -4,21 +4,31 @@
  * and open the template in the editor.
  */
 
+import dao.UsuarioDAO;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 /**
  *
  * @author murilo
  */
 @WebServlet(urlPatterns = {"/PaginaPessoal"})
+@MultipartConfig(fileSizeThreshold=1024*1024*2,
+                 maxFileSize=1024*1024*10,
+                 maxRequestSize=1024*1024*50)
 public class PaginaPessoal extends HttpServlet {
-
+    private static final long serialVersionUID = 1L;
+    private int id = 0;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -45,6 +55,8 @@ public class PaginaPessoal extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        UsuarioDAO userDao = new UsuarioDAO();
+        
         if(request.getSession().getAttribute("login")==null){
             response.sendRedirect("Login");
             return;
@@ -58,6 +70,13 @@ public class PaginaPessoal extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Página Pessoal do Usuário</h1>");
+            out.println("<div>");
+            out.println(userDao.getImages(request.getSession().getAttribute("login").toString()));
+            out.println("</div>");
+            out.println("<form action=\"PaginaPessoal\" method=\"post\" accept-charset=\"utf-8\" enctype=\"multipart/form-data\">");
+            out.println("<input type=\"file\" name=\"arquivo\" value=\"\" />");
+            out.println("<input type=\"submit\" name=\"enviar\" value=\"Enviar\" />");
+            out.println("</form>");
             out.println("<form action=\"PaginaPessoal\" method=\"post\" accept-charset=\"utf-8\">");
             out.println("<input type=\"hidden\" name=\"sair\" value=\"true\" class=\"text-field\"><br>");
             out.println("<input type=\"submit\" value=\"Sair\" class=\"buttom\">");
@@ -83,6 +102,26 @@ public class PaginaPessoal extends HttpServlet {
             response.sendRedirect("Login");
             return;
         }
+        UsuarioDAO userDao = new UsuarioDAO();
+        String user = request.getSession().getAttribute("login").toString();
+        Part part = request.getPart("arquivo");
+        String images_path = request.getServletContext().getRealPath("/uploads");
+        InputStream in = part.getInputStream();
+        if(part.getContentType().equals("image/png")){
+            String id = userDao.getNextDataId(user);
+            if(id==null){
+                id = "-1";
+            }
+            int newId = Integer.parseInt(id)+1;
+            userDao.insereData(user, "image/png", "uploads/"+user+newId+".png", newId);
+            FileOutputStream out = new FileOutputStream(new File(images_path+"/"+user+newId+".png"));
+            byte [] buffer = new byte[1024];
+            int read = 0;
+            while((read = in.read(buffer))!=-1)
+                out.write(buffer, 0, read);
+            out.close();
+        }
+        doGet(request, response);
     }
 
     /**

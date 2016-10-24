@@ -51,21 +51,82 @@ public class Inscrevase extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Inscrevase</title>");            
+            out.println("<title>Servlet Inscrevase</title>");
+            out.println("<link rel=\"stylesheet\" type=\"text/css\" href=CSS/paginaPessoal.css>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Cadastro de usuário</h1>");
+            out.println("<span class=\"pageTitle\">Cadastro de usuário</span>");
             out.println("<form action=\"Inscrevase\" method=\"post\" accept-charset=\"utf-8\">");
-            out.println("Nome: <input type=\"text\" name=\"nome\" class=\"text-field\"><br>");
-            out.println("E-mail: <input type=\"text\" name=\"email\" class=\"text-field\"><br>");
-            out.println("Login: <input type=\"text\" name=\"login\" class=\"text-field\"><br>");
-            out.println("Senha: <input type=\"text\" name=\"senha\" class=\"text-field\"><br>");
-            out.println("Estado: <input type=\"text\" name=\"estado\" class=\"text-field\"><br>");
-            out.println("Cidade: <input type=\"text\" name=\"cidade\" class=\"text-field\"><br>");
-            out.println("Bairro: <input type=\"text\" name=\"bairro\" class=\"text-field\"><br>");
-            out.println("Rua: <input type=\"text\" name=\"rua\" class=\"text-field\"><br>");
-            out.println("Numero: <input type=\"text\" name=\"numero\" class=\"text-field\"><br>");
-            out.println("<input type=\"submit\" value=\"Cadastrar\" class=\"buttom\">");
+            out.println("   <table class=\"centerBox\">"
+                    +   "       <tr>"
+                    + "             <td>Nome:</td>"
+                    +   "           <td><input type=\"text\" name=\"nome\" required=\"required\" class=\"text-field\"></td>"
+                    + "         </tr>");
+            out.println("       <tr>"
+                    + "             <td>E-mail:</td>"
+                    +   "           <td><input type=\"email\" name=\"email\" required=\"required\" class=\"text-field\"></td>"
+                    + "         </tr>");
+            out.println("       <tr>"
+                    + "             <td>Login:</td>"
+                    +   "           <td><input type=\"text\" name=\"login\" required=\"required\" class=\"text-field\"></td>"
+                    + "         </tr>");
+            out.println("       <tr>"
+                    + "             <td>Senha:</td>"
+                    +   "           <td><input type=\"password\" name=\"senha\" required=\"required\" class=\"text-field\"></td>"
+                    + "         </tr>");
+            out.println("       <tr>"
+                    + "             <td>Estado:</td>"
+                    +   "           <td><select name=\"estado\" required=\"required\">\n" +
+                        "	<option value=\"AC\">Acre</option>\n" +
+                        "	<option value=\"AL\">Alagoas</option>\n" +
+                        "	<option value=\"AM\">Amazonas</option>\n" +
+                        "	<option value=\"AP\">Amapá</option>\n" +
+                        "	<option value=\"BA\">Bahia</option>\n" +
+                        "	<option value=\"CE\">Ceará</option>\n" +
+                        "	<option value=\"DF\">Distrito Federal</option>\n" +
+                        "	<option value=\"ES\">Espírito Santo</option>\n" +
+                        "	<option value=\"GO\">Goiás</option>\n" +
+                        "	<option value=\"MA\">Maranão</option>\n" +
+                        "	<option value=\"MG\">Minas Gerais</option>\n" +
+                        "	<option value=\"MS\">Mato Grosso do Sul</option>\n" +
+                        "	<option value=\"MT\">Mato Grosso</option>\n" +
+                        "	<option value=\"PA\">Pará</option>\n" +
+                        "	<option value=\"PB\">Paraíba</option>\n" +
+                        "	<option value=\"PE\">Pernambuco</option>\n" +
+                        "	<option value=\"PI\">Piauí</option>\n" +
+                        "	<option value=\"PR\">Paraná</option>\n" +
+                        "	<option value=\"RJ\">Rio de Janeiro</option>\n" +
+                        "	<option value=\"RN\">Rio Grande do Norte</option>\n" +
+                        "	<option value=\"RS\">Rio Grande do Sul</option>\n" +
+                        "	<option value=\"RO\">Rondônia</option>\n" +
+                        "	<option value=\"RR\">Roraima</option>\n" +
+                        "	<option value=\"SC\">Santa Catarina</option>\n" +
+                        "	<option value=\"SE\">Sergipe</option>\n" +
+                        "	<option value=\"SP\">São Paulo</option>\n" +
+                        "	<option value=\"TO\">Tocantins</option>\n" +
+                        "   </select></td>"
+                    + "         </tr>");
+                    //+   "   <input type=\"text\" name=\"estado\" class=\"text-field\"><br>");
+            out.println("       <tr>"
+                    + "             <td>Cidade:</td>"
+                    +   "           <td><input type=\"text\" name=\"cidade\" required=\"required\" class=\"text-field\"></td>"
+                    + "         </tr>");
+            out.println("       <tr>"
+                    + "             <td>Bairro:</td>"
+                    +   "           <td><input type=\"text\" name=\"bairro\" required=\"required\" class=\"text-field\"></td>"
+                    + "         </tr>");
+            out.println("       <tr>"
+                    + "             <td>Rua:</td>"
+                    +   "           <td><input type=\"text\" name=\"rua\" required=\"required\" class=\"text-field\"></td>"
+                    + "         </tr>");
+            out.println("       <tr>"
+                    + "             <td>Numero:</td>"
+                    +   "           <td><input type=\"text\" name=\"numero\" required=\"required\" class=\"text-field\"></td>"
+                    + "         </tr>");
+            out.println("   </table><br><br>"
+                    + "     <span class=\"centerBox\"> <input type=\"submit\" value=\"Cadastrar\" class=\"buttom\">");
+            out.println("   <input type=\"reset\" value=\"Limpar\" class=\"buttom\">"
+                    + "     <a href=\"Login\"><button type=\"button\">Cancelar</button></a></span>");
             out.println("</form>");
             out.println("</body>");
             out.println("</html>");

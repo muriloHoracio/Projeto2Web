@@ -5,11 +5,18 @@
  */
 
 import dao.UsuarioDAO;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -23,9 +30,7 @@ import javax.servlet.http.Part;
  * @author murilo
  */
 @WebServlet(urlPatterns = {"/PaginaPessoal"})
-@MultipartConfig(fileSizeThreshold=1024*1024*2,
-                 maxFileSize=1024*1024*10,
-                 maxRequestSize=1024*1024*50)
+@MultipartConfig//(fileSizeThreshold=1024*1024*2,maxFileSize=1024*1024*10,maxRequestSize=1024*1024*50)
 public class PaginaPessoal extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private int id = 0;
@@ -66,20 +71,70 @@ public class PaginaPessoal extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet PaginaPessoal</title>");            
+            out.println("<title>Página Pessoal</title>");            
+            out.println("<link rel=\"stylesheet\" type=\"text/css\" href=CSS/paginaPessoal.css>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Página Pessoal do Usuário</h1>");
-            out.println("<div>");
-            out.println(userDao.getImages(request.getSession().getAttribute("login").toString()));
+            out.println("<a name=\"PAGETOP\"></a>");
+            out.println("<span class=\"pageTitle\">Página Pessoal do Usuário</span>");
+            out.println("<div class=\"centerBox\" id=\"searchBox\">");
+            out.println("   <form action=\"PaginaPessoal\" method=\"get\">");
+            out.println("       Busca: <input type=\"search\" name=\"busca\">");
+            out.println("       <input type=\"submit\" value=\"Buscar\">");
+            out.println("   </form>");
             out.println("</div>");
-            out.println("<form action=\"PaginaPessoal\" method=\"post\" accept-charset=\"utf-8\" enctype=\"multipart/form-data\">");
-            out.println("<input type=\"file\" name=\"arquivo\" value=\"\" />");
-            out.println("<input type=\"submit\" name=\"enviar\" value=\"Enviar\" />");
+            out.println("<span class=\"centerBox\"><a href=\"#SENDFILE\">Enviar Arquivo</a>   <a href=\"#SENDTEXT\">Enviar Texto</a></span><br><br>");
+            out.println("<div>");
+            //out.println(userDao.listFiles(request.getSession().getAttribute("login").toString()));
+            if(request.getParameter("busca")!=null){
+                out.println(userDao.buscaFiles(request.getSession().getAttribute("login").toString(), request.getParameter("busca").toString(), request.getContextPath()));
+            } else {
+                out.println(userDao.buscaFiles(request.getSession().getAttribute("login").toString(), "", request.getContextPath()));
+            }
+            out.println("</div>");
+            out.println("<div>");
+            out.println("<a name=\"SENDFILE\"></a>");
+            out.println("<span class=\"pageTitle\">Enviar Arquivos    <span style=\"font-size:14px;\"><a href=\"#PAGETOP\">[topo]</a></span>");
+            out.println("</div>");
+            out.println("<div class=\"centerBox\">");
+            out.println("   <form action=\"PaginaPessoal\" method=\"post\" enctype=\"multipart/form-data\">"
+                    + "         <input type=\"hidden\" name=\"postType\" value=\"uploadFile\">");
+            out.println("       <table>");
+            out.println("           <tr>"
+                    + "                 <td>"
+                    + "                     Descrição: "
+                    + "                 </td>"
+                    + "                 <td>"
+                    + "                     <input type=\"text\" name=\"description\" required=\"required\">"
+                    + "                 </td>"
+                    + "             </tr>");
+            out.println("           <tr>"
+                    + "                 <td>"
+                    + "                     Arquivo: "
+                    + "                 </td>"
+                    + "                 <td>"
+                    + "                     <input type=\"file\" name=\"file\" required=\"required\" value=\"Nenhum arquivo selecionado\">"
+                    + "                 </td>"
+                    + "             </tr>"
+                    + "         </table><br>");
+            out.println("       <span class=\"centerBox\">"
+                    + "             <input type=\"submit\" value=\"Enviar\">"
+                    + "             <input type=\"reset\" value=\"Limpar\">"
+                    + "         </span>");
             out.println("</form>");
+            out.println("<a name=\"SENDTEXT\"></a>");
+            out.println("<span class=\"pageTitle\">Enviar Texto    <span style=\"font-size:14px;\"><a href=\"#PAGETOP\">[topo]</a></span></span>");
+            out.println("<div class=\"centerBox\">");
+            out.println("   <form action=\"PaginaPessoal\" method=\"post\" accept-charset=\"utf-8\" id=\"textEntries\">"
+                    + "         <input type=\"hidden\" name=\"postType\" value=\"uploadText\">"
+                    + "         Título: <input type=\"text\" required=\"required\" name=\"titulo\">");
+            out.println("       <textarea name=\"texto\" required=\"required\" form=\"textEntries\">Escreva o seu texto aqui...</textarea>");
+            out.println("       <span><input type=\"submit\" name=\"enviar\" value=\"Enviar\"></span>");
+            out.println("   </form>");
+            out.println("</div>");
             out.println("<form action=\"PaginaPessoal\" method=\"post\" accept-charset=\"utf-8\">");
-            out.println("<input type=\"hidden\" name=\"sair\" value=\"true\" class=\"text-field\"><br>");
-            out.println("<input type=\"submit\" value=\"Sair\" class=\"buttom\">");
+            out.println("<input type=\"hidden\" name=\"postType\" value=\"sair\" class=\"text-field\"><br>");
+            out.println("<input type=\"submit\" value=\"Sair\" id=\"sairButton\">");
             out.println("</form>");
             out.println("</body>");
             out.println("</html>");
@@ -97,31 +152,79 @@ public class PaginaPessoal extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if(request.getParameter("sair")!=null){
+        if(request.getParameter("postType")==null||request.getParameter("postType").equals("")){
+            doGet(request, response);
+        }else if(request.getParameter("postType").equals("uploadFile")){
+            String user = request.getSession().getAttribute("login").toString();
+            UsuarioDAO userDao = new UsuarioDAO();
+            String filesPath = request.getServletContext().getRealPath("/uploads");
+            String description = request.getParameter("description");
+            Part filePart = request.getPart("file");
+            if(!(filePart.getSubmittedFileName()==null||filePart.getSubmittedFileName().equals(""))){
+                String extensao;
+                String[] filenameSplitted = filePart.getSubmittedFileName().split("\\.");
+                extensao = filenameSplitted[filenameSplitted.length-1];
+                InputStream fileContent = filePart.getInputStream();
+                String fileNameInStorage = userDao.getNextDataId(user);
+                if(fileNameInStorage==null){
+                    fileNameInStorage = "-1";
+                }
+                int newId = Integer.parseInt(fileNameInStorage)+1;
+                fileNameInStorage = user+newId+"."+extensao;
+                userDao.insereData(newId, user, "uploads/"+fileNameInStorage, filePart.getSubmittedFileName(), filePart.getContentType(), description);
+                FileOutputStream out = new FileOutputStream(new File(filesPath+"/"+fileNameInStorage));
+                byte [] buffer = new byte[1024];
+                int read = 0;
+                while((read = fileContent.read(buffer))!=-1)
+                    out.write(buffer, 0, read);
+                out.close();
+            }
+            doGet(request, response);
+        }else if(request.getParameter("postType").equals("uploadText")){
+            UsuarioDAO userDao = new UsuarioDAO();
+            String user = request.getSession().getAttribute("login").toString();
+            String filesPath = request.getServletContext().getRealPath("/uploads");
+            String fileNameInStorage = userDao.getNextDataId(user);
+            if(fileNameInStorage==null){
+                fileNameInStorage = "-1";
+            }
+            int newId = Integer.parseInt(fileNameInStorage)+1;
+            fileNameInStorage = user+newId+".txt";
+            userDao.insereData(newId, user, "uploads/"+fileNameInStorage, request.getParameter("titulo"), "text/plain", request.getParameter("texto"));
+            File f = new File(filesPath+"/"+fileNameInStorage);
+            FileWriter fileWriter = new FileWriter(f);
+            BufferedWriter buffWriter = new BufferedWriter(fileWriter);
+            PrintWriter printer = new PrintWriter(buffWriter);
+            printer.println(request.getParameter("texto"));
+            printer.flush();
+            printer.close();
+            doGet(request, response);
+        }else if(request.getParameter("postType").equals("sair")){
             request.getSession().invalidate();
             response.sendRedirect("Login");
             return;
-        }
-        UsuarioDAO userDao = new UsuarioDAO();
-        String user = request.getSession().getAttribute("login").toString();
-        Part part = request.getPart("arquivo");
-        String images_path = request.getServletContext().getRealPath("/uploads");
-        InputStream in = part.getInputStream();
-        if(part.getContentType().equals("image/png")){
-            String id = userDao.getNextDataId(user);
-            if(id==null){
-                id = "-1";
+        }else if(request.getParameter("postType").equals("downloadFile")){
+            String file = request.getParameter("dataFileName");
+            response.setContentType(request.getParameter("fileType"));
+            response.setHeader("Content-disposition","attachment; filename="+request.getParameter("dataFileOldName"));
+            OutputStream out = response.getOutputStream();
+            FileInputStream in = new FileInputStream(new File(request.getServletContext().getRealPath("")+"/"+file));
+            byte[] buffer = new byte[1024];
+            int length;
+            while((length = in.read(buffer)) > 0){
+                out.write(buffer, 0, length);
             }
-            int newId = Integer.parseInt(id)+1;
-            userDao.insereData(user, "image/png", "uploads/"+user+newId+".png", newId);
-            FileOutputStream out = new FileOutputStream(new File(images_path+"/"+user+newId+".png"));
-            byte [] buffer = new byte[1024];
-            int read = 0;
-            while((read = in.read(buffer))!=-1)
-                out.write(buffer, 0, read);
+            in.close();
             out.close();
+            doGet(request, response);
+        }else if(request.getParameter("postType").equals("removeFile")){
+            String file = request.getParameter("dataFileName");
+            UsuarioDAO userDao = new UsuarioDAO();
+            userDao.removeData(file);
+            File f = new File(request.getServletContext().getRealPath("")+"/"+file);
+            f.delete();
+            doGet(request, response);
         }
-        doGet(request, response);
     }
 
     /**

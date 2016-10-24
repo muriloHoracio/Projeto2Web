@@ -53,15 +53,26 @@ public class Login extends HttpServlet {
             out.println("<html>");
             out.println("<head>");
             out.println("<title>Login</title>");            
+            out.println("<link rel=\"stylesheet\" type=\"text/css\" href=CSS/paginaPessoal.css>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Login de usuário</h1>");
-            out.println("<form action=\"Login\" method=\"post\" accept-charset=\"utf-8\">");
-            out.println("Nome do usuário: <input type=\"text\" name=\"login\" class=\"text-field\"><br>");
-            out.println("Senha: <input type=\"text\" name=\"senha\" class=\"text-field\"><br>");
-            out.println("<input type=\"submit\" value=\"Logar\" class=\"buttom\">");
-            out.println("</form>");
-            out.println("<a href=\"Inscrevase\">Abrir uma conta</a>");
+            out.println("<span class=\"pageTitle\">Login de usuário</span>");
+            out.println("<div class=\"centerBox\">");
+            out.println("   <form action=\"Login\" method=\"post\" accept-charset=\"utf-8\">");
+            out.println("   <table>"
+                    + "         <tr>"
+                    + "             <td style=\"text-align:right;\">Nome do usuário:</td>"
+                    +   "           <td><input type=\"text\" name=\"login\" required=\"required\" class=\"text-field\"></td>"
+                    + "         </tr>");
+            out.println("       <tr>"
+                    + "             <td style=\"text-align:right;\">Senha:</td>"
+                    +   "           <td><input type=\"password\" name=\"senha\" required=\"required\" class=\"text-field\"></td>");
+            out.println("       </tr>"
+                    + "     </table>"
+                    + "     <span><input type=\"submit\" value=\"Logar\" class=\"buttom\"><a href=\"Inscrevase\"><button type=\"button\" style=\"width:200px;\">Abrir uma conta</button></a></span>");
+            out.println("   </form>");
+            out.println("</div>");
+            
             out.println("</body>");
             out.println("</html>");
         }

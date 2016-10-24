@@ -30,42 +30,12 @@
 				</a>
 				<span class="header_toggle header_toggle_cart">Cart</span>
 			</div>
-			<nav class="header_navigation">
-				<nav class="primary_navigation">
-					<ul class="primary_navigation_list">
-						<li class="primary_navigation_item">
-							<a class="primary_navigation_link" href="">Opcao 1</a>
-						</li>
-						<li class="primary_navigation_item">
-							<a class="primary_navigation_link" href="">Opcao 1</a>
-						</li>
-						<li class="primary_navigation_item">
-							<a class="primary_navigation_link" href="">Opcao 1</a>
-						</li>
-						<li class="primary_navigation_item">
-							<a class="primary_navigation_link" href="">Opcao 1</a>
-						</li>
-						<li class="primary_navigation_item">
-							<a class="primary_navigation_link" href="">Opcao 1</a>
-						</li>
-						<li class="primary_navigation_item">
-							<a class="primary_navigation_link" href="">Opcao 1</a>
-						</li>
-						<li class="primary_navigation_item">
-							<a class="primary_navigation_link" href="">Opcao 1</a>
-						</li>
-						<li class="primary_navigation_item">
-							<a class="primary_navigation_link" href="">Opcao 1</a>
-						</li>
-					</ul>
-				</nav>
-			</nav>
 		</div>
 	</div>
         <div class="main_article">
 		<div class="carousel_item-content">
 			<div class="carousel_item-content-inner">
-				<h1 class="carousel_item-title">Entry Pottermore</h1>
+				<h1 class="carousel_item-title">Login Pottermore</h1>
                                 <div class="div-form">
                                     <form action="LoginServlet" method="post" accept-charset="utf-8">
                                         <div class="div-form"> 
@@ -83,10 +53,12 @@
                                         <div>
                                             <input type="submit" value="Logar" class="buttom_logar">
                                         </div>
+                                        <div style="position: relative;">
+                                            <h2 class="carousel_item-subtitle">Ainda não tem uma conta?</h2>
+                                            <a href=InscrevaseServlet class="buttom_logar">Inscreva-se</a>
+                                        </div>
                                     </form>
                                 </div>
-                                <h2 class="">Ainda não tem uma conta?</h2>
-                                <a href=Inscrevase class="buttom_logar">Inscreva-se</a>
 			</div>	
 		</div>
 	</div>

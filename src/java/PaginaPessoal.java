@@ -14,9 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -61,84 +58,11 @@ public class PaginaPessoal extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         UsuarioDAO userDao = new UsuarioDAO();
-        
         if(request.getSession().getAttribute("login")==null){
             response.sendRedirect("Login");
             return;
         }
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Página Pessoal</title>");            
-            out.println("<link rel=\"stylesheet\" type=\"text/css\" href=CSS/paginaPessoal.css>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<a name=\"PAGETOP\"></a>");
-            out.println("<span class=\"pageTitle\">Página Pessoal do Usuário</span>");
-            out.println("<div class=\"centerBox\" id=\"searchBox\">");
-            out.println("   <form action=\"PaginaPessoal\" method=\"get\">");
-            out.println("       Busca: <input type=\"search\" name=\"busca\">");
-            out.println("       <input type=\"submit\" value=\"Buscar\">");
-            out.println("   </form>");
-            out.println("</div>");
-            out.println("<span class=\"centerBox\"><a href=\"#SENDFILE\">Enviar Arquivo</a>   <a href=\"#SENDTEXT\">Enviar Texto</a></span><br><br>");
-            out.println("<div>");
-            //out.println(userDao.listFiles(request.getSession().getAttribute("login").toString()));
-            if(request.getParameter("busca")!=null){
-                out.println(userDao.buscaFiles(request.getSession().getAttribute("login").toString(), request.getParameter("busca").toString(), request.getContextPath()));
-            } else {
-                out.println(userDao.buscaFiles(request.getSession().getAttribute("login").toString(), "", request.getContextPath()));
-            }
-            out.println("</div>");
-            out.println("<div>");
-            out.println("<a name=\"SENDFILE\"></a>");
-            out.println("<span class=\"pageTitle\">Enviar Arquivos    <span style=\"font-size:14px;\"><a href=\"#PAGETOP\">[topo]</a></span>");
-            out.println("</div>");
-            out.println("<div class=\"centerBox\">");
-            out.println("   <form action=\"PaginaPessoal\" method=\"post\" enctype=\"multipart/form-data\">"
-                    + "         <input type=\"hidden\" name=\"postType\" value=\"uploadFile\">");
-            out.println("       <table>");
-            out.println("           <tr>"
-                    + "                 <td>"
-                    + "                     Descrição: "
-                    + "                 </td>"
-                    + "                 <td>"
-                    + "                     <input type=\"text\" name=\"description\" required=\"required\">"
-                    + "                 </td>"
-                    + "             </tr>");
-            out.println("           <tr>"
-                    + "                 <td>"
-                    + "                     Arquivo: "
-                    + "                 </td>"
-                    + "                 <td>"
-                    + "                     <input type=\"file\" name=\"file\" required=\"required\" value=\"Nenhum arquivo selecionado\">"
-                    + "                 </td>"
-                    + "             </tr>"
-                    + "         </table><br>");
-            out.println("       <span class=\"centerBox\">"
-                    + "             <input type=\"submit\" value=\"Enviar\">"
-                    + "             <input type=\"reset\" value=\"Limpar\">"
-                    + "         </span>");
-            out.println("</form>");
-            out.println("<a name=\"SENDTEXT\"></a>");
-            out.println("<span class=\"pageTitle\">Enviar Texto    <span style=\"font-size:14px;\"><a href=\"#PAGETOP\">[topo]</a></span></span>");
-            out.println("<div class=\"centerBox\">");
-            out.println("   <form action=\"PaginaPessoal\" method=\"post\" accept-charset=\"utf-8\" id=\"textEntries\">"
-                    + "         <input type=\"hidden\" name=\"postType\" value=\"uploadText\">"
-                    + "         Título: <input type=\"text\" required=\"required\" name=\"titulo\">");
-            out.println("       <textarea name=\"texto\" required=\"required\" form=\"textEntries\">Escreva o seu texto aqui...</textarea>");
-            out.println("       <span><input type=\"submit\" name=\"enviar\" value=\"Enviar\"></span>");
-            out.println("   </form>");
-            out.println("</div>");
-            out.println("<form action=\"PaginaPessoal\" method=\"post\" accept-charset=\"utf-8\">");
-            out.println("<input type=\"hidden\" name=\"postType\" value=\"sair\" class=\"text-field\"><br>");
-            out.println("<input type=\"submit\" value=\"Sair\" id=\"sairButton\">");
-            out.println("</form>");
-            out.println("</body>");
-            out.println("</html>");
-        }
+        request.getRequestDispatcher("JSP/PaginaPessoal.jsp").forward(request, response);
     }
 
     /**
@@ -150,8 +74,9 @@ public class PaginaPessoal extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("utf-8");
         if(request.getParameter("postType")==null||request.getParameter("postType").equals("")){
             doGet(request, response);
         }else if(request.getParameter("postType").equals("uploadFile")){

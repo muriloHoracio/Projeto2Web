@@ -21,9 +21,9 @@ public class UsuarioDAO {
         try{
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/proj2web", "murilo", "murilo");
-            String sql = "SELECT * FROM \"user\" WHERE login LIKE ? AND senha LIKE ?;";
+            String sql = "SELECT * FROM usertable WHERE login LIKE ? AND senha LIKE ?;";
             ppst = con.prepareStatement(sql);
-            ppst.setString(1, "%"+login+"%");
+            ppst.setString(1, login);
             ppst.setString(2, senha);
             ResultSet rs = ppst.executeQuery();
             if(rs.next()){
@@ -41,7 +41,7 @@ public class UsuarioDAO {
         try{
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/proj2web", "murilo", "murilo");
-            String sql = "INSERT INTO \"user\" VALUES (?,?,?,?,?,?,?,?,?);";
+            String sql = "INSERT INTO usertable VALUES (?,?,?,?,?,?,?,?,?);";
             ppst = con.prepareStatement(sql);
             ppst.setString(1, nome);
             ppst.setString(2, email);
@@ -201,13 +201,13 @@ public class UsuarioDAO {
         try{
             Class.forName("org.postgresql.Driver");
             con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/proj2web", "murilo", "murilo");
-            String sql = "SELECT * FROM data WHERE login LIKE ? AND description ILIKE ?;";
+            String sql = "SELECT * FROM data WHERE login LIKE ? AND description ILIKE ? ORDER BY id DESC;";
             ppst = con.prepareStatement(sql);
             ppst.setString(1, user);
             ppst.setString(2, "%"+query+"%");
             ResultSet rs = ppst.executeQuery();
             String out = "";
-            out += "<table>";
+            out += "<table class=\"dataTable\">";
             while(rs.next()){
                 out     +=  "<tr>"
                         +   "   <td>"
@@ -216,12 +216,12 @@ public class UsuarioDAO {
                         +   "           <input type=\"hidden\" name=\"dataFileName\" value=\""+rs.getString("file")+"\">"
                         +   "           <input type=\"hidden\" name=\"fileType\" value=\""+rs.getString("type")+"\">"
                         +   "           <input type=\"hidden\" name=\"dataFileOldName\" value=\""+rs.getString("fileoldname")+"\">"
-                        +   "           <input type=\"submit\" name=\"downloadButton\" value=\"Download\" style=\"font-size:13px; height:25px;margin-top:2px;margin-bottom:2px;\">"
+                        +   "           <input type=\"submit\" name=\"downloadButton\" value=\"Download\" class=\"buttons_small\" style=\"font-size:13px; height:25px;margin-top:2px;margin-bottom:2px;width:100px;\">"
                         +   "       </form>"
                         +   "       <form action=\"PaginaPessoal\" method=\"post\" accept-charset=\"utf-8\" style=\"display:block;\">"
                         +   "           <input type=\"hidden\" name=\"postType\" value=\"removeFile\">"
                         +   "           <input type=\"hidden\" name=\"dataFileName\" value=\""+rs.getString("file")+"\">"
-                        +   "           <input type=\"submit\" name=\"removeButton\" value=\"Excluir\" style=\"font-size:13px; height:25px;margin-top:2px;margin-bottom:2px;\">"
+                        +   "           <input type=\"submit\" name=\"removeButton\" value=\"Excluir\" class=\"buttons_small\" style=\"font-size:13px; height:25px;margin-top:2px;margin-bottom:2px;width:100px;\">"
                         +   "       </form>"
                         +   "   </td>";
                 if(rs.getString("type").split("/")[0].equals("text")){
@@ -246,7 +246,7 @@ public class UsuarioDAO {
                         +   "   </div>"
                         +   "</td>";
                 } else if(rs.getString("type").split("/")[0].equals("audio")){
-                    out +=  "<td>"
+                    out +=  "<td class=\"descriptionCell\">"
                         +   "   <div class=\"centerBox\">"
                         +   "       <audio controls>"
                         +   "           <source src=\""+path+"/"+rs.getString("file")+"\" type=\"audio/mpeg\">"
@@ -262,7 +262,8 @@ public class UsuarioDAO {
                         +   "   <td class=\"dataDescription\">"
                         +   "       "+rs.getString("description")
                         +   "   </td>"
-                        +   "</tr>";
+                        +   "</tr>"
+                        +   "<tr><td><br><br></td><td><br><hr><br></td></tr>";
             }
             out += "</table>";
             return out;
